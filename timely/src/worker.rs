@@ -1,5 +1,6 @@
 //! The root of each single-threaded worker.
 
+use instant::Instant;
 use std::any::Any;
 use std::cell::{RefCell, RefMut};
 use std::collections::hash_map::Entry;
@@ -7,7 +8,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 use std::str::FromStr;
 use std::sync::Arc;
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
 use crate::communication::allocator::thread::{ThreadPuller, ThreadPusher};
 use crate::communication::{Allocate, Data, Pull, Push};
@@ -557,7 +558,7 @@ impl<A: Allocate> Worker<A> {
     ///
     /// });
     /// ```
-    pub fn timer(&self) -> Instant {
+    pub fn timer(&self) -> instant::Instant {
         self.timer
     }
 

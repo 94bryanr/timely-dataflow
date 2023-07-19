@@ -1,7 +1,8 @@
 extern crate timely;
 
+use instant::Instant;
 use std::fmt::{Display, Formatter};
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
 use criterion::black_box;
 use criterion::*;
@@ -36,11 +37,7 @@ fn bench(c: &mut Criterion) {
                 move |b, params| {
                     b.iter_custom(|iters| {
                         let config = Config::process(params.threads);
-                        black_box(experiment_exchange(
-                            config,
-                            params.batch,
-                            iters,
-                        ))
+                        black_box(experiment_exchange(config, params.batch, iters))
                     })
                 },
             );
@@ -53,11 +50,7 @@ fn bench(c: &mut Criterion) {
                             communication: CommunicationConfig::ProcessBinary(params.threads),
                             worker: WorkerConfig::default(),
                         };
-                        black_box(experiment_exchange(
-                            config,
-                            params.batch,
-                            iters,
-                        ))
+                        black_box(experiment_exchange(config, params.batch, iters))
                     })
                 },
             );
@@ -65,11 +58,7 @@ fn bench(c: &mut Criterion) {
     }
 }
 
-fn experiment_exchange(
-    config: Config,
-    batch: u64,
-    rounds: u64,
-) -> Duration {
+fn experiment_exchange(config: Config, batch: u64, rounds: u64) -> Duration {
     timely::execute(config, move |worker| {
         let mut input = InputHandle::new();
         let probe = worker.dataflow(|scope| scope.input_from(&mut input).exchange(|x| *x).probe());
